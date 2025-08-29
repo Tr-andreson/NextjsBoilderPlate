@@ -1,30 +1,47 @@
-'use client' // Error boundaries must be Client Components
+'use client'
 
+import Link from 'next/link'
 import { useEffect } from 'react'
 
 export default function Error({
   error,
-  reset,
+  // reset,
 }: {
   error: Error & { digest?: string }
-  reset: () => void
+  // reset: () => void
 }) {
+
+  const reportError = () => {
+
+    fetch("https://test/report-error", {
+      method: "POST",
+      body: JSON.stringify({
+        type: "client-react",
+        message: error.message,
+        stack: error.stack,
+        timestamp: new Date().toISOString(),
+      }),
+      headers: { "Content-Type": "application/json" },
+    })
+
+  }
+
   useEffect(() => {
-    // Log the error to an error reporting service
-    console.error(error)
-  }, [error])
+    reportError()
+  }, [])
 
   return (
     <div>
       <h2>Something went wrong!</h2>
-      <button
-        onClick={
-          // Attempt to recover by trying to re-render the segment
-          () => reset()
-        }
-      >
-        Try again
-      </button>
+      <p>{error.message}</p>
+      <Link href="/">Go to Home Page</Link>
+      {/* <button */}
+      {/*   onClick={ */}
+      {/*     () => reset() */}
+      {/*   } */}
+      {/* > */}
+      {/*   Try again */}
+      {/* </button> */}
     </div>
   )
 }
